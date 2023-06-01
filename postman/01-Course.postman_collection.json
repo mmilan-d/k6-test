@@ -1,0 +1,198 @@
+{
+	"info": {
+		"_postman_id": "41449f2e-0241-4bc4-a96a-07e7fda04827",
+		"name": "01-Course",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "CREATE COURSE",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a9252002-ae0e-4cf2-99fc-d8793016cd67",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    var response = JSON.parse(responseBody);\r",
+							"    console.log(response[0].id)\r",
+							"    postman.setEnvironmentVariable(\"courseId\", response[0].id);\r", 
+							"}); "
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [],
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{courseURL}}?wstoken=585a5e34abe199537fec2640b8252ef7&moodlewsrestformat=json&wsfunction=core_course_create_courses&courses[0][fullname]=mycourses&courses[0][shortname]=mycourses123&courses[0][categoryid]=1&courses[0][visible]=1&courses[0][summary]=text&courses[0][enablecompletion]=0&courses[0][summaryformat]=1&courses[0][format]=topics&courses[0][numsections]=0",
+					"host": [
+						"{{courseURL}}"
+					],
+					"query": [
+						{
+							"key": "wstoken",
+							"value": "585a5e34abe199537fec2640b8252ef7"
+						},
+						{
+							"key": "moodlewsrestformat",
+							"value": "json"
+						},
+						{
+							"key": "wsfunction",
+							"value": "core_course_create_courses"
+						},
+						{
+							"key": "courses[0][fullname]",
+							"value": "mycourses"
+						},
+						{
+							"key": "courses[0][shortname]",
+							"value": "mycourses123"
+						},
+						{
+							"key": "courses[0][categoryid]",
+							"value": "1"
+						},
+						{
+							"key": "courses[0][visible]",
+							"value": "1"
+						},
+						{
+							"key": "courses[0][summary]",
+							"value": "text"
+						},
+						{
+							"key": "courses[0][enablecompletion]",
+							"value": "0"
+						},
+						{
+							"key": "courses[0][summaryformat]",
+							"value": "1"
+						},
+						{
+							"key": "courses[0][format]",
+							"value": "topics"
+						},
+						{
+							"key": "courses[0][numsections]",
+							"value": "0"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET COURSE",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "2e8cf5e4-7a47-46b9-bb56-dad912ea68af",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    var legalOrganizationId = JSON.parse(responseBody);",
+							"    console.log(legalOrganizationId[0].id)",
+							"",
+							"}); "
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:83/webservice/rest/server.php?wstoken=585a5e34abe199537fec2640b8252ef7&wsfunction=core_course_get_courses&options[ids][0]=11&moodlewsrestformat=json",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "83",
+					"path": [
+						"webservice",
+						"rest",
+						"server.php"
+					],
+					"query": [
+						{
+							"key": "wstoken",
+							"value": "585a5e34abe199537fec2640b8252ef7"
+						},
+						{
+							"key": "wsfunction",
+							"value": "core_course_get_courses"
+						},
+						{
+							"key": "options[ids][0]",
+							"value": "11"
+						},
+						{
+							"key": "moodlewsrestformat",
+							"value": "json"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE COURSE",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{courseURL}}?wstoken=585a5e34abe199537fec2640b8252ef7&moodlewsrestformat=json&wsfunction=core_course_delete_courses&courseids[0]={{courseId}}",
+					"host": [
+						"{{courseURL}}"
+					],
+					"query": [
+						{
+							"key": "wstoken",
+							"value": "585a5e34abe199537fec2640b8252ef7"
+						},
+						{
+							"key": "moodlewsrestformat",
+							"value": "json"
+						},
+						{
+							"key": "wsfunction",
+							"value": "core_course_delete_courses"
+						},
+						{
+							"key": "courseids[0]",
+							"value": "{{courseId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

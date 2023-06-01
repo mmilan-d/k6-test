@@ -1,0 +1,8 @@
+$env:MOODLE_ADMIN = "admin"
+$env:MOODLE_ADMIN_PASSWORD = "Admin123!@#"
+$env:VUS = "5"
+$env:DURATION = "15s"
+$env:INT_TOKEN = "585a5e34abe199537fec2640b8252ef7"
+$env:DEV_TOKEN = "adddummytokenhere"
+$env:PROD_TOKEN = "adddummytokenhere"
+$env:ENVIRONMENT = "int"

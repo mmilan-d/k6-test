@@ -1,0 +1,29 @@
+--- 
+k6-test-1: 
+  cache: {}
+  image: 
+    entrypoint: 
+      - ""
+    name: loadimpact/k6
+  only: 
+    - master
+  script: 
+    - "k6 run ./tests/01-script.js --vus 5 --duration 5s"
+  stage: test
+  tags: 
+    - gitlab-org-docker
+k6-test-2: 
+  cache: {}
+  image: 
+    entrypoint: 
+      - ""
+    name: loadimpact/k6
+  only: 
+    - master
+  script: 
+    - "k6 run ./tests/02-options.js --vus 5 --duration 5s"
+  stage: test
+  tags: 
+    - gitlab-org-docker
+stages: 
+  - test
