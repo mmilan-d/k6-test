@@ -1,29 +1,27 @@
---- 
+stages:
+  - test1
+  - test2
+
 k6-test-1: 
-  cache: {}
   image: 
-    entrypoint: 
-      - ""
     name: loadimpact/k6
+    entrypoint: [""]
+  script: 
+    - "k6 run admin_suli_es_kepek_test.js"
   only: 
     - master
-  script: 
-    - "k6 run ./tests/01-script.js --vus 5 --duration 5s"
-  stage: test
+  stage: test1
   tags: 
     - gitlab-org-docker
+
 k6-test-2: 
-  cache: {}
   image: 
-    entrypoint: 
-      - ""
     name: loadimpact/k6
+    entrypoint: [""]
+  script: 
+    - "k6 run admin_arlista_test.js"
   only: 
     - master
-  script: 
-    - "k6 run ./tests/02-options.js --vus 5 --duration 5s"
-  stage: test
+  stage: test2
   tags: 
     - gitlab-org-docker
-stages: 
-  - test

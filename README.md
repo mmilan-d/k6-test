@@ -1,103 +1,82 @@
-# K6 nfr
+**K6 Load Tesztelés Dokumentáció**
 
-K6 Performance and Stress Testing
+Mire jó a load teszt?
+- A load tesztelés során olyan tesztkörnyezetet hozunk létre, amelyben szimuláljuk a szoftverünknek a valós életben jelentkező terheléseket. A load teszt alapvető célja, hogy megmérje a rendszerünk reakcióját és teljesítményét olyan körülmények között, amelyek megegyeznek vagy akár meghaladják a normál használatot.
 
-## Session 1 - Installation
-Install K6
-Git Create Project
-Locally Clone Project
+- A k6 egy olyen load tesztelő eszköz, melyet arra fejlesztettek ki, hogy mérje és elemzze a webalkalmazások terhelési szintjeit. Segítségével meghatározható, hogy az alkalmazás hogyan viselkedik nagy terhelés alatt, hogy a rendszer időben és megfelelően válaszol-e a kérésekre.
 
+Setup:
+- Windows: "choco install k6" vagy "winget install k6"
+- MacOS: "brew install k6"
+- Linux:
+    Debian/Ubuntu:
+        sudo gpg -k
+        sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
+        echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+        sudo apt-get update
+        sudo apt-get install k6
+    Fedora/CentOS:
+        sudo dnf install https://dl.k6.io/rpm/repo.rpm
+        sudo dnf install k6
 
-Done !
+Konfiguráció:
+- A K6 konfigurálása nagyon rugalmas. Az egyszerű parancssori opcióktól a JSON konfigurációs fájlon át a JavaScript API-ig számos módon testre szabhatjuk a teszteket. Az igényeknek megfelelően állíthatóak be a szimulált virtuális felhasználók (VUs) száma, az iterációk száma, az egyes tesztek időtartama, stb.
 
-## Write and Execute Sample Test
+- https://k6.io/docs/using-k6/k6-options/reference/
 
+Hogyan írj teszteseteket?
+- A teszteseteket JavaScript nyelven írjuk a K6-hoz. Egy teszteset tartalmazza a tesztelendő URL-eket, a különböző HTTP metódusokat (GET, POST, stb.), valamint a teszteléshez szükséges adatokat és szkripteket. A K6 lehetőséget biztosít arra is, hogy a tesztesetekben különböző szcenáriókat és terhelési modelleket definiáljunk, például lépcsőzetes növelést vagy csökkenést, konstans terhelést, stb.
 
+    HAR TO K6:
+        1. HAR file rögzítése:
+        I. Új inkognító ablak
+        II. F12 => Network => aktiváld a hálózati napló rögzítését
+        III. Menj végig manuálisan a tesztelni kívánt URL-eken
+        IV. Válassz ki egy tetszőleges URL-t, majd jobb klikk => Az összes mentése mint HAR
 
+        2. HAR to k6 Konvertálás:
+        I. har-to-k6 repo installálása (ha nincs még installálva): $ npm install -g har-to-k6 
+        II. HAR konvertálása K6 fájlá: har-to-k6 myfile.har -o loadtest.js
 
-## Framework 
-Contains 
-Environment
-Test Data
-Utility - Common Functions 
-Test Scripts - K6 Scripts
+        3. K6 fájl konfigurálása:
+        I: Options konfigurálása
+            pl.:
+            export const options = {
+                vus: 10,
+                duration: '30s',
+            };
+        II. Third-party content törlése (ha van)
 
-### Environment
-- env.sh file- create file - contains sensitive data. This data willbe local. This file wot be checked-in to Git. Each employee in team will have env/.sh. It contains variables and values that can be declared as ENV variables inside CI/CD
-Whats sensitive data ? - User Name, Password, Tokens, Secret Keys
-It alos contains data whihc can be configured at the runtime. For example, number of virtual users - lets say you want to pass number of users at the runtime to k6 script For example, k6 run --vus 10, instead of 10 pass value from Env variable. 
-So , there is no need to modify tets script. Just configure ENV value and users will be changed
+        4. Teszt futtatása: $ k6 run loadtest.js
 
-- env.js file - env file
-Lets assme that you are testing google.com
-Then, internally in google project
-there can be
-Dev Environment - http://www.google-dev.com - developers are contonously pushing code here
-Int Environment - http://www.google-int.com - testers are tetsing here, making sure that there are not critical defects, regresion defects
-Prod Environment - http://www.gogole.com - Actual Google that is visible to the world, production envrionment
+    K6 Cloud Dashboard:
 
-There can be many more environments
+        AUTH TOKEN és PROJECT_ID, illetve a teszt eredménye itt található:
+        https://app.k6.io/tests/new
 
-So we aretesting moodle
-lets create files
+        Lépések:
 
-There are 2 types of environment
+        1.Hitelesítsd a k6 fiókodat:
+        k6 login cloud -t {AUTH_TOKEN}
 
+        2.Bővítsd ki a teszt fájlt ezzel az opcióval: 
+        export const options = {
+        vus: 1,
+        ext: {
+            loadimpact: {
+            projectID: {YOUR_PROJECT_ID}
+            name: "TEST NAME"
+            }
+        }
+        }
 
-#### Trend
-- whats trend - Custom metrics ...lets check an example
+        3.Teszt elindítása:
+        k6 cloud {TEST_NAME.js}
 
+Teszt eredményének kiértékelése:
+- Ha a tesztet lokálisan futtattuk, akkor a teszt futásának végeztével a konzolban kapunk különböző mérőszámokat eredményül. A K6 kimenetei között megtalálható a teszt általános statisztikája, a HTTP kérések időtartamának eloszlása, a sikeres és sikertelen kérések száma, stb. Ezeket az adatokat használhatjuk az alkalmazás teljesítményének elemzésére. A tesztelés sikere vagy sikertelensége attól függ, hogy az alkalmazás hogyan teljesít a teszt során. Ha az alkalmazás a terhelés alatt is megfelelően működik, gyorsan és helyesen reagál a kérésekre, akkor a teszt sikeres. Ha az alkalmazás lassul, hibás válaszokat küld, vagy egyáltalán nem reagál, akkor a teszt sikertelen.
 
-### Lets create Git Pipeline
+Known Issues/Limitations:
+- A tesztek írása csakis JavaScriptben történhet
+- A K6 a tesztek futtatásához nagy mennyiségű erőforrást igényel, ami korlátozhatja a nagyobb skálájú tesztek futtatását.
 
-You want to execute K6 scripts in Ci/CD - Git Pipeline
-So you need to create YML file
-You can scedule to run Pipeline whenever you want
-Whenever developer pushed code, they can trigger your Pipeline to find out if their new code changes/ merge/ changes has introduced any issues
-
-We will execute sample scripts from test directory
-
-Now lest checked the code
-we will direclty checked-in code in master bracnh
-
-For best prctises of checked-in code, please refer to GIT best practises
-
-before that lets see env variables
-if you have to use env.sh file, then you need to declare all variables inside CI/CD variables
-
-This is how you can integrate K6 scripts with GIT PIPELINE
-
-THANKS a lot
-
-
-### Change USer Details
-git config --global user.name "CtrlAltSkills Care"
-git config --global user.email ctrlaltskills@gmail.com
-
-### Some theory - 
-Which runner to choose ? means
-on which machine we shuld execute performance test
-What should be ideal configuration of machine for executing k6 / performance tsts
-
-Avoid Windows OS - Do not execute K6 test - actual K6 test with your project/ APIs on Windows. Windows is heavy weight OS
-
-If you test scripts contaisn pure ES5+ scripts, very less dynamic data generation like you are generating too must data at the runtime as a part of your test scripts/ tets cases/ .. then 1VPC/ 2gb ram MIGHT BE ENOUGH TO EXECUTE TESTS WITH 100 vu
-
-yOU CAN FOLLOW SCLAE UP APPROACH
-sTART WITH sMALL
-
-uSE aMAZON ec2 VMs
-create VM with 1VPC, 1 GB RAM, install K6, execute tets with lest say 20-50 Virtual Users, see if it works check if there are any performance issues...check that there are no memory error - out of memroy while executing tests
-Memory errors will be visibl on K6 console
-
-You can also, logged in to AW EC2 console, verify memroy and CPU usage when your tests are running
-
-Check that CPU usage is not very high > 90%, atleast 20% memory must remain free
-
-Crate checlist of what things you will verify wile selecting runner
-
-Many more things you can follow while chosing corrct runner/ machine to execute tests
-
-If you choose incorrt runner/ machine configuration, then you might see higer repsonse, more failures, out of memory issues
-
-So choose runner / machine carefully to execute k6 test cases
