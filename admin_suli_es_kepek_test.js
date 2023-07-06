@@ -28,7 +28,7 @@ function getSessionCode(html) {
 }
 
 export default function main() {
-  let formData, response, sessionId
+  let formData, response, sessionId, kc_token
 
   const username = __ENV.USERNAME;
   const password = __ENV.PASSWORD;
@@ -49,8 +49,7 @@ export default function main() {
 
     let cookies = jar.cookiesForURL('https://auth.mvtest.qdak.hu/realms/iskolaevkonyv/protocol/openid-connect/auth?client_id=qdak-admin&redirect_uri=https%3A%2F%2Fadmin.mvtest.qdak.hu&state=075402f9-5137-4edc-83c3-896e639ace96&response_mode=fragment&response_type=code&scope=openid&nonce=6b0cfd43-6d4a-40b2-88e6-e18e4aa23cd2&code_challenge=pFBszQYc-Uha5cLVDPv4XJEgoR6ywslEc7nWDAxH280&code_challenge_method=S256');
     sessionId = cookies['AUTH_SESSION_ID'][0]
-
-    console.log(sessionId, sessionCode)
+    kc_token = cookies['KC_RESTART'][0]
 
       response = http.post(
         `https://auth.mvtest.qdak.hu/realms/iskolaevkonyv/login-actions/authenticate?session_code=${sessionCode}&execution=deb44c74-4860-4f4a-8394-f388f116c4a7&client_id=qdak-admin&tab_id=QJO1j1Cz8E4`,
@@ -68,7 +67,7 @@ export default function main() {
             'cache-control': 'no-cache',
             'content-type': 'application/x-www-form-urlencoded',
             cookie:
-              `AUTH_SESSION_ID=${sessionId}; AUTH_SESSION_ID_LEGACY=${sessionId}; KC_RESTART=eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICIyM2E5MTNmNC05OTdmLTQ1YjMtYjhlYi0zZmJjMGExMTJjZmQifQ.eyJjaWQiOiJxZGFrLWFkbWluIiwicHR5Ijoib3BlbmlkLWNvbm5lY3QiLCJydXJpIjoiaHR0cHM6Ly9hZG1pbi5tdnRlc3QucWRhay5odSIsImFjdCI6IkFVVEhFTlRJQ0FURSIsIm5vdGVzIjp7InNjb3BlIjoib3BlbmlkIiwiaXNzIjoiaHR0cHM6Ly9hdXRoLm12dGVzdC5xZGFrLmh1L3JlYWxtcy9pc2tvbGFldmtvbnl2IiwicmVzcG9uc2VfdHlwZSI6ImNvZGUiLCJjb2RlX2NoYWxsZW5nZV9tZXRob2QiOiJTMjU2IiwicmVkaXJlY3RfdXJpIjoiaHR0cHM6Ly9hZG1pbi5tdnRlc3QucWRhay5odSIsInN0YXRlIjoiYmZhZDg3OTUtZGFlNi00ODU3LWE5M2UtZTg1NjI2MjJkYjU5Iiwibm9uY2UiOiI3YmRmNWE4Yy05OTVmLTRiODYtYTNmMy0zZjA0MGI0NjJiMTIiLCJjb2RlX2NoYWxsZW5nZSI6IkdWRzlOd0Zmclh6dmV2ZkNValZaYXpET3l6Q05fc1FodUhyVmpMZkowVlEiLCJyZXNwb25zZV9tb2RlIjoiZnJhZ21lbnQifX0._Elect9Fvt39pGNPPOWA90-Swu0OBwwJEzLo5HAlCw8`,
+              `AUTH_SESSION_ID=${sessionId}; AUTH_SESSION_ID_LEGACY=${sessionId}; KC_RESTART=${kc_token}`,
             origin: 'null',
             pragma: 'no-cache',
             'sec-ch-ua': '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
@@ -108,26 +107,6 @@ export default function main() {
       })
       checkResponseStatus(response);
 
-      response = http.get('https://cdn.quilljs.com/1.2.6/quill.snow.css', {
-        headers: {
-          accept: 'text/css,*/*;q=0.1',
-          'accept-encoding': 'gzip, deflate, br',
-          'accept-language': 'en-GB,en;q=0.9',
-          'cache-control': 'no-cache',
-          pragma: 'no-cache',
-          referer: 'https://admin.mvtest.qdak.hu/',
-          'sec-ch-ua': '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
-          'sec-ch-ua-mobile': '?1',
-          'sec-ch-ua-platform': '"Android"',
-          'sec-fetch-dest': 'style',
-          'sec-fetch-mode': 'no-cors',
-          'sec-fetch-site': 'cross-site',
-          'user-agent':
-            'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36',
-        },
-      })
-      checkResponseStatus(response);
-
       response = http.get('https://admin.mvtest.qdak.hu/env-config.js', {
         headers: {
           accept: '*/*',
@@ -140,46 +119,6 @@ export default function main() {
           'sec-ch-ua-mobile': '?1',
           'sec-ch-ua-platform': '"Android"',
           'sec-fetch-dest': 'script',
-          'sec-fetch-mode': 'no-cors',
-          'sec-fetch-site': 'same-origin',
-          'user-agent':
-            'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36',
-        },
-      })
-      checkResponseStatus(response);
-
-      response = http.get('https://admin.mvtest.qdak.hu/static/css/2.268e1c48.chunk.css', {
-        headers: {
-          accept: 'text/css,*/*;q=0.1',
-          'accept-encoding': 'gzip, deflate, br',
-          'accept-language': 'en-GB,en;q=0.9',
-          'cache-control': 'no-cache',
-          pragma: 'no-cache',
-          referer: 'https://admin.mvtest.qdak.hu/',
-          'sec-ch-ua': '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
-          'sec-ch-ua-mobile': '?1',
-          'sec-ch-ua-platform': '"Android"',
-          'sec-fetch-dest': 'style',
-          'sec-fetch-mode': 'no-cors',
-          'sec-fetch-site': 'same-origin',
-          'user-agent':
-            'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36',
-        },
-      })
-      checkResponseStatus(response);
-
-      response = http.get('https://admin.mvtest.qdak.hu/static/css/main.4288b75c.chunk.css', {
-        headers: {
-          accept: 'text/css,*/*;q=0.1',
-          'accept-encoding': 'gzip, deflate, br',
-          'accept-language': 'en-GB,en;q=0.9',
-          'cache-control': 'no-cache',
-          pragma: 'no-cache',
-          referer: 'https://admin.mvtest.qdak.hu/',
-          'sec-ch-ua': '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
-          'sec-ch-ua-mobile': '?1',
-          'sec-ch-ua-platform': '"Android"',
-          'sec-fetch-dest': 'style',
           'sec-fetch-mode': 'no-cors',
           'sec-fetch-site': 'same-origin',
           'user-agent':
@@ -308,26 +247,6 @@ export default function main() {
       )
       checkResponseStatus(response);
 
-      response = http.get('https://admin.mvtest.qdak.hu/favicon.ico', {
-        headers: {
-          accept: 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
-          'accept-encoding': 'gzip, deflate, br',
-          'accept-language': 'en-GB,en;q=0.9',
-          'cache-control': 'no-cache',
-          pragma: 'no-cache',
-          referer: 'https://admin.mvtest.qdak.hu/',
-          'sec-ch-ua': '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
-          'sec-ch-ua-mobile': '?1',
-          'sec-ch-ua-platform': '"Android"',
-          'sec-fetch-dest': 'image',
-          'sec-fetch-mode': 'no-cors',
-          'sec-fetch-site': 'same-origin',
-          'user-agent':
-            'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36',
-        },
-      })
-      checkResponseStatus(response);
-
       response = http.post(
         'https://auth.mvtest.qdak.hu/realms/iskolaevkonyv/protocol/openid-connect/token',
         {
@@ -429,30 +348,6 @@ export default function main() {
       })
       checkResponseStatus(response);
 
-      response = http.get(
-        'https://fonts.gstatic.com/s/raleway/v28/1Ptxg8zYS_SKggPN4iEgvnHyvveLxVvaorCIPrEVJz9d.woff2',
-        {
-          headers: {
-            accept: '*/*',
-            'accept-encoding': 'gzip, deflate, br',
-            'accept-language': 'en-GB,en;q=0.9',
-            'cache-control': 'no-cache',
-            origin: 'https://admin.mvtest.qdak.hu',
-            pragma: 'no-cache',
-            referer: 'https://fonts.googleapis.com/',
-            'sec-ch-ua': '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
-            'sec-ch-ua-mobile': '?1',
-            'sec-ch-ua-platform': '"Android"',
-            'sec-fetch-dest': 'font',
-            'sec-fetch-mode': 'cors',
-            'sec-fetch-site': 'cross-site',
-            'user-agent':
-              'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36',
-          },
-        }
-      )
-      checkResponseStatus(response);
-
       response = http.options('https://api.mvtest.qdak.hu/admin/users/current', null, {
         headers: {
           accept: '*/*',
@@ -491,50 +386,6 @@ export default function main() {
             'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36',
         },
       })
-      checkResponseStatus(response);
-
-      response = http.get('https://admin.mvtest.qdak.hu/static/media/test.22de7dac.jpg', {
-        headers: {
-          accept: 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
-          'accept-encoding': 'gzip, deflate, br',
-          'accept-language': 'en-GB,en;q=0.9',
-          'cache-control': 'no-cache',
-          pragma: 'no-cache',
-          referer: 'https://admin.mvtest.qdak.hu/shops',
-          'sec-ch-ua': '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
-          'sec-ch-ua-mobile': '?1',
-          'sec-ch-ua-platform': '"Android"',
-          'sec-fetch-dest': 'image',
-          'sec-fetch-mode': 'no-cors',
-          'sec-fetch-site': 'same-origin',
-          'user-agent':
-            'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36',
-        },
-      })
-      checkResponseStatus(response);
-
-      response = http.get(
-        'https://fonts.gstatic.com/s/roboto/v30/KFOmCnqEu92Fr1Mu4mxKKTU1Kg.woff2',
-        {
-          headers: {
-            accept: '*/*',
-            'accept-encoding': 'gzip, deflate, br',
-            'accept-language': 'en-GB,en;q=0.9',
-            'cache-control': 'no-cache',
-            origin: 'https://admin.mvtest.qdak.hu',
-            pragma: 'no-cache',
-            referer: 'https://fonts.googleapis.com/',
-            'sec-ch-ua': '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
-            'sec-ch-ua-mobile': '?1',
-            'sec-ch-ua-platform': '"Android"',
-            'sec-fetch-dest': 'font',
-            'sec-fetch-mode': 'cors',
-            'sec-fetch-site': 'cross-site',
-            'user-agent':
-              'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36',
-          },
-        }
-      )
       checkResponseStatus(response);
 
       response = http.get('https://api.mvtest.qdak.hu/admin/users/current', {
@@ -578,30 +429,6 @@ export default function main() {
             'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36',
         },
       })
-      checkResponseStatus(response);
-
-      response = http.get(
-        'https://fonts.gstatic.com/s/raleway/v28/1Ptxg8zYS_SKggPN4iEgvnHyvveLxVvaorCGPrEVJz9d-c8.woff2',
-        {
-          headers: {
-            accept: '*/*',
-            'accept-encoding': 'gzip, deflate, br',
-            'accept-language': 'en-GB,en;q=0.9',
-            'cache-control': 'no-cache',
-            origin: 'https://admin.mvtest.qdak.hu',
-            pragma: 'no-cache',
-            referer: 'https://fonts.googleapis.com/',
-            'sec-ch-ua': '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
-            'sec-ch-ua-mobile': '?1',
-            'sec-ch-ua-platform': '"Android"',
-            'sec-fetch-dest': 'font',
-            'sec-fetch-mode': 'cors',
-            'sec-fetch-site': 'cross-site',
-            'user-agent':
-              'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36',
-          },
-        }
-      )
       checkResponseStatus(response);
 
       response = http.get('https://api.mvtest.qdak.hu/admin/pop-up-notifications/active', {
@@ -731,46 +558,6 @@ export default function main() {
           'sec-fetch-dest': 'empty',
           'sec-fetch-mode': 'cors',
           'sec-fetch-site': 'same-site',
-          'user-agent':
-            'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36',
-        },
-      })
-      checkResponseStatus(response);
-
-      response = http.get('https://admin.mvtest.qdak.hu/favicon.ico', {
-        headers: {
-          accept: 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
-          'accept-encoding': 'gzip, deflate, br',
-          'accept-language': 'en-GB,en;q=0.9',
-          'cache-control': 'no-cache',
-          pragma: 'no-cache',
-          referer: 'https://admin.mvtest.qdak.hu/shops/676/administration/orders',
-          'sec-ch-ua': '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
-          'sec-ch-ua-mobile': '?1',
-          'sec-ch-ua-platform': '"Android"',
-          'sec-fetch-dest': 'image',
-          'sec-fetch-mode': 'no-cors',
-          'sec-fetch-site': 'same-origin',
-          'user-agent':
-            'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36',
-        },
-      })
-      checkResponseStatus(response);
-
-      response = http.get('https://admin.mvtest.qdak.hu/favicon.ico', {
-        headers: {
-          accept: 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
-          'accept-encoding': 'gzip, deflate, br',
-          'accept-language': 'en-GB,en;q=0.9',
-          'cache-control': 'no-cache',
-          pragma: 'no-cache',
-          referer: 'https://admin.mvtest.qdak.hu/shops/676/administration/orders',
-          'sec-ch-ua': '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
-          'sec-ch-ua-mobile': '?1',
-          'sec-ch-ua-platform': '"Android"',
-          'sec-fetch-dest': 'image',
-          'sec-fetch-mode': 'no-cors',
-          'sec-fetch-site': 'same-origin',
           'user-agent':
             'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36',
         },
@@ -932,26 +719,6 @@ export default function main() {
           },
         }
       )
-      checkResponseStatus(response);
-
-      response = http.get('https://admin.mvtest.qdak.hu/favicon.ico', {
-        headers: {
-          accept: 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
-          'accept-encoding': 'gzip, deflate, br',
-          'accept-language': 'en-GB,en;q=0.9',
-          'cache-control': 'no-cache',
-          pragma: 'no-cache',
-          referer: 'https://admin.mvtest.qdak.hu/shops/676/administration/galleries',
-          'sec-ch-ua': '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
-          'sec-ch-ua-mobile': '?1',
-          'sec-ch-ua-platform': '"Android"',
-          'sec-fetch-dest': 'image',
-          'sec-fetch-mode': 'no-cors',
-          'sec-fetch-site': 'same-origin',
-          'user-agent':
-            'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36',
-        },
-      })
       checkResponseStatus(response);
 
       response = http.get('https://api.mvtest.qdak.hu/admin/shops/676/modifiers/templates/7723', {
@@ -1414,46 +1181,6 @@ export default function main() {
           },
         }
       )
-      checkResponseStatus(response);
-
-      response = http.get('https://admin.mvtest.qdak.hu/favicon.ico', {
-        headers: {
-          accept: 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
-          'accept-encoding': 'gzip, deflate, br',
-          'accept-language': 'en-GB,en;q=0.9',
-          'cache-control': 'no-cache',
-          pragma: 'no-cache',
-          referer: 'https://admin.mvtest.qdak.hu/shops/676/administration/galleries/7734',
-          'sec-ch-ua': '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
-          'sec-ch-ua-mobile': '?1',
-          'sec-ch-ua-platform': '"Android"',
-          'sec-fetch-dest': 'image',
-          'sec-fetch-mode': 'no-cors',
-          'sec-fetch-site': 'same-origin',
-          'user-agent':
-            'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36',
-        },
-      })
-      checkResponseStatus(response);
-
-      response = http.get('https://admin.mvtest.qdak.hu/static/media/test.22de7dac.jpg', {
-        headers: {
-          accept: 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
-          'accept-encoding': 'gzip, deflate, br',
-          'accept-language': 'en-GB,en;q=0.9',
-          'cache-control': 'no-cache',
-          pragma: 'no-cache',
-          referer: 'https://admin.mvtest.qdak.hu/shops/676/administration/galleries/7734',
-          'sec-ch-ua': '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
-          'sec-ch-ua-mobile': '?1',
-          'sec-ch-ua-platform': '"Android"',
-          'sec-fetch-dest': 'image',
-          'sec-fetch-mode': 'no-cors',
-          'sec-fetch-site': 'same-origin',
-          'user-agent':
-            'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36',
-        },
-      })
       checkResponseStatus(response);
 
       response = http.get('https://api.mvtest.qdak.hu/admin/modifiers', {
@@ -2176,26 +1903,6 @@ export default function main() {
       })
       checkResponseStatus(response);
 
-      response = http.get('https://admin.mvtest.qdak.hu/favicon.ico', {
-        headers: {
-          accept: 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
-          'accept-encoding': 'gzip, deflate, br',
-          'accept-language': 'en-GB,en;q=0.9',
-          'cache-control': 'no-cache',
-          pragma: 'no-cache',
-          referer: 'https://admin.mvtest.qdak.hu/shops/676/administration/galleries/7735',
-          'sec-ch-ua': '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
-          'sec-ch-ua-mobile': '?1',
-          'sec-ch-ua-platform': '"Android"',
-          'sec-fetch-dest': 'image',
-          'sec-fetch-mode': 'no-cors',
-          'sec-fetch-site': 'same-origin',
-          'user-agent':
-            'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36',
-        },
-      })
-      checkResponseStatus(response);
-
       response = http.options(
         'https://api.mvtest.qdak.hu/admin/shops/676/groups/7735/products?page=1&size=10&sort=name,asc',
         null,
@@ -2218,26 +1925,6 @@ export default function main() {
           },
         }
       )
-      checkResponseStatus(response);
-
-      response = http.get('https://admin.mvtest.qdak.hu/static/media/test.22de7dac.jpg', {
-        headers: {
-          accept: 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
-          'accept-encoding': 'gzip, deflate, br',
-          'accept-language': 'en-GB,en;q=0.9',
-          'cache-control': 'no-cache',
-          pragma: 'no-cache',
-          referer: 'https://admin.mvtest.qdak.hu/shops/676/administration/galleries/7735',
-          'sec-ch-ua': '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
-          'sec-ch-ua-mobile': '?1',
-          'sec-ch-ua-platform': '"Android"',
-          'sec-fetch-dest': 'image',
-          'sec-fetch-mode': 'no-cors',
-          'sec-fetch-site': 'same-origin',
-          'user-agent':
-            'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36',
-        },
-      })
       checkResponseStatus(response);
 
       response = http.get('https://api.mvtest.qdak.hu/admin/shops/676/groups/7736/cover', {
@@ -4681,46 +4368,6 @@ export default function main() {
       )
       checkResponseStatus(response);
 
-      response = http.get('https://admin.mvtest.qdak.hu/favicon.ico', {
-        headers: {
-          accept: 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
-          'accept-encoding': 'gzip, deflate, br',
-          'accept-language': 'en-GB,en;q=0.9',
-          'cache-control': 'no-cache',
-          pragma: 'no-cache',
-          referer: 'https://admin.mvtest.qdak.hu/shops/676/administration/galleries/7736',
-          'sec-ch-ua': '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
-          'sec-ch-ua-mobile': '?1',
-          'sec-ch-ua-platform': '"Android"',
-          'sec-fetch-dest': 'image',
-          'sec-fetch-mode': 'no-cors',
-          'sec-fetch-site': 'same-origin',
-          'user-agent':
-            'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36',
-        },
-      })
-      checkResponseStatus(response);
-
-      response = http.get('https://admin.mvtest.qdak.hu/static/media/test.22de7dac.jpg', {
-        headers: {
-          accept: 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
-          'accept-encoding': 'gzip, deflate, br',
-          'accept-language': 'en-GB,en;q=0.9',
-          'cache-control': 'no-cache',
-          pragma: 'no-cache',
-          referer: 'https://admin.mvtest.qdak.hu/shops/676/administration/galleries/7736',
-          'sec-ch-ua': '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
-          'sec-ch-ua-mobile': '?1',
-          'sec-ch-ua-platform': '"Android"',
-          'sec-fetch-dest': 'image',
-          'sec-fetch-mode': 'no-cors',
-          'sec-fetch-site': 'same-origin',
-          'user-agent':
-            'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36',
-        },
-      })
-      checkResponseStatus(response);
-
       response = http.get('https://api.mvtest.qdak.hu/admin/shops/676/groups/7735', {
         headers: {
           accept: 'application/json, text/plain, */*',
@@ -5124,26 +4771,6 @@ export default function main() {
       )
       checkResponseStatus(response);
 
-      response = http.get('https://admin.mvtest.qdak.hu/favicon.ico', {
-        headers: {
-          accept: 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
-          'accept-encoding': 'gzip, deflate, br',
-          'accept-language': 'en-GB,en;q=0.9',
-          'cache-control': 'no-cache',
-          pragma: 'no-cache',
-          referer: 'https://admin.mvtest.qdak.hu/shops/676/administration/galleries',
-          'sec-ch-ua': '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
-          'sec-ch-ua-mobile': '?1',
-          'sec-ch-ua-platform': '"Android"',
-          'sec-fetch-dest': 'image',
-          'sec-fetch-mode': 'no-cors',
-          'sec-fetch-site': 'same-origin',
-          'user-agent':
-            'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36',
-        },
-      })
-      checkResponseStatus(response);
-
       response = http.get('https://api.mvtest.qdak.hu/admin/shops/676/groups/7734/cover', {
         headers: {
           accept: 'application/json, text/plain, */*',
@@ -5408,26 +5035,6 @@ export default function main() {
           'sec-fetch-dest': 'empty',
           'sec-fetch-mode': 'cors',
           'sec-fetch-site': 'same-site',
-          'user-agent':
-            'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36',
-        },
-      })
-      checkResponseStatus(response);
-
-      response = http.get('https://admin.mvtest.qdak.hu/favicon.ico', {
-        headers: {
-          accept: 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
-          'accept-encoding': 'gzip, deflate, br',
-          'accept-language': 'en-GB,en;q=0.9',
-          'cache-control': 'no-cache',
-          pragma: 'no-cache',
-          referer: 'https://admin.mvtest.qdak.hu/shops/676/administration/orders',
-          'sec-ch-ua': '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
-          'sec-ch-ua-mobile': '?1',
-          'sec-ch-ua-platform': '"Android"',
-          'sec-fetch-dest': 'image',
-          'sec-fetch-mode': 'no-cors',
-          'sec-fetch-site': 'same-origin',
           'user-agent':
             'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36',
         },
